@@ -21,6 +21,13 @@ Flux is built upon the GitOps principles, which are:
 1. Git as single source of truth: Git repositories contain the complete and authoritative state of your system
 2. Declarative Infrastructure & Applications (same as Declarative Configuration)
 3. Automated Deployment & Synchronization: once changes are committed to Git, they're automatically deployed
-4. Continuous Reconciliation & Self-Healing: 
+4. Continuous Reconciliation & Self-Healing: Flux constantly monitors your cluster and automatically fixes any drift from the desired state
 
-2/9
+# Flux Architecture
+
+Its architecture consists of 3 main layers that work together seamlessly.  
+1. Source: Git repos (manifests), Helm repos (packaged apps), OCI registries (container images & artifacts)
+2. Control: controllers monitor and reconcile state, they're the brains of Flux
+3. Deploy: apply changes to Kubernetes cluster
+
+3/9
