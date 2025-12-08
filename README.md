@@ -5,7 +5,7 @@
 # What is Flux?
 
 Flux is an open-source GitOps toolkit that helps us automate how we deploy and manage applications on Kubernetes clusters.  
-The key principle is that it uses a Git repository as the single source of truth for managing a given cluster.  
+The key principle is that it uses Git as the single source of truth for managing clusters.  
 
 This means that all our application configurations, infrastructure definitions, and deployment specifications are stored in a Git repo.  
 
@@ -32,7 +32,54 @@ Its architecture consists of 3 main layers that work together seamlessly:
 
 # Core Components
 
-Flux is composed of several specialized controllers:
+Flux is composed of several specialized controllers that work together as a toolkit:
+- Source controller: responsible for fetching artifacts from various sources (Git, Helm, or OCI).
+  - It keeps track of changes and makes them available to other controllers.
+- Kustomize controller: applies Kustomize configurations to your clusters.
+  - It allows us to customize Kubernetes manifests without modifying the original files.
+- Helm controller: manages Helm chart releases and upgrades
+  - if you're using Helm to package your applications, this controller handles the entire lifecycle
+- Notification controller: handles events and webhook notifications
+  - it can send alerts when deployments succeed or fail
+  - it can receive webhooks from Git providers to trigger immediate reconciliation when code is pushed
 
+# GitRepository resource
 
-3/9
+`GitRepository` is a Custom Resource Definition (**CRD**) from FluxCD's source-controller that defines a source for fetching and archiving Git repository contents as a tarball artifact for Kubernetes reconciliation in GitOps workflows.
+
+Here's an example of a GitRepository resource definition (YAML file):
+```yaml
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: my-app
+spec:
+  interval: 1m
+  url: https://github.com/org/my-app
+  ref:
+    branch: main
+```
+The first line tells Kubernetes this is a Flux source resource.  
+Flux will check this Git repo for changes every minute.  
+The URL points to the GitHub repo location.  
+The ref section specifies which branch to monitor.  
+
+The above resource tells Flux where to find the application configuration, and how often to check for updates.  
+
+# Kustomization resource
+
+```yaml
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: my-app
+spec:
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: my-app
+  path: ./deploy
+  prune: true
+```
+
+5/9
