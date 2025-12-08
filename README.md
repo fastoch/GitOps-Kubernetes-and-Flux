@@ -64,7 +64,7 @@ Flux will check this Git repo for changes every minute.
 The URL points to the GitHub repo location.  
 The ref section specifies which branch to monitor.  
 
-The above resource tells Flux where to find the application configuration, and how often to check for updates.  
+The above spec tells Flux where to find the application configuration, and how often to check for updates.  
 
 # Kustomization resource
 
@@ -81,5 +81,16 @@ spec:
   path: ./deploy
   prune: true
 ```
+Here, the spec defines how to deploy the configuration.  
+Flux will reconcile this resource every 5 minutes.  
+The sourceRef section links this Kustomization to the Git repo we've defined earlier.  
+The path field specifies which directory in the repository contains the manifests to deploy.  
 
-5/9
+`prune: true` = if you delete a manifest from the Git repo, Flux will delete the corresponding resource from your cluster.  
+This ensures your cluster stays perfectly synchronized with your Git repo's definitions.
+
+# The Reconciliation Loop
+
+
+
+6/9
